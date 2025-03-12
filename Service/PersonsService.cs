@@ -7,6 +7,7 @@ using ServiceContracts.Enums;
 using Microsoft.EntityFrameworkCore;
 using CsvHelper;
 using System.Globalization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Services
 {
@@ -227,12 +228,24 @@ namespace Services
       return true;
     }
 
-        /*public Task<MemoryStream> GetPersonsCSV()
+        public  async Task<MemoryStream> GetPersonsCSV()
         {
             MemoryStream memoryStream = new MemoryStream();
             StreamWriter streamWriter = new StreamWriter(memoryStream);
-            CsvWriter csvWriter =new CsvWriter(streamWriter,CultureInfo.InvariantCulture);
-            csvWriter w
-        } */
+            CsvWriter csvWriter =new CsvWriter(streamWriter,CultureInfo.InvariantCulture,leaveOpen:true);
+            csvWriter.WriteHeader<PersonResponse>();
+            csvWriter.NextRecord();
+
+            List<PersonResponse> persons =_db.Persons.Select(Temp=>Temp.ToPersonResponse()).ToList();
+
+             await csvWriter.WriteRecordsAsync(persons);
+
+            memoryStream.Position = 0;
+            return memoryStream;
+
+            
+
+
+        } 
     }
 }
