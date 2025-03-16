@@ -7,6 +7,8 @@ using Services;
 using Xunit;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using Moq;
+using EntityFrameworkCoreMock;
 
 namespace CRUDTests
 {
@@ -14,15 +16,22 @@ namespace CRUDTests
   {
     private readonly ICountriesService _countriesService;
 
-    //constructor
-    public CountriesServiceTest()
-    {
-      _countriesService = new CountriesService(new PersonsDbContext(new DbContextOptionsBuilder<PersonsDbContext>().Options));
-    }
+        //constructor
+        public CountriesServiceTest()
+        {
+            var countriesInitialData = new List<Country>() { };
 
-    #region AddCountry
-    //When CountryAddRequest is null, it should throw ArgumentNullException
-    [Fact]
+            DbContextMock<ApplicationDbContext> dbContextMock = new DbContextMock<ApplicationDbContext>(
+              new DbContextOptionsBuilder<ApplicationDbContext>().Options);
+
+            ApplicationDbContext dbContext = dbContextMock.Object;
+            dbContextMock.CreateDbSetMock(temp => temp.Countries, countriesInitialData);
+
+            _countriesService = new CountriesService(dbContext);
+        }
+        #region AddCountry
+        //When CountryAddRequest is null, it should throw ArgumentNullException
+        [Fact]
     public async Task AddCountry_NullCountry()
     {
       //Arrange

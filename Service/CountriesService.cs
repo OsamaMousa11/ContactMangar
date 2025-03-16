@@ -1,4 +1,4 @@
-﻿using Entities;
+﻿ using Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
@@ -7,69 +7,69 @@ using ServiceContracts.DTO;
 
 namespace Services
 {
-  public class CountriesService : ICountriesService
-  {
-    //private field
-    private readonly PersonsDbContext _db;
-
-    //constructor
-    public CountriesService(PersonsDbContext personsDbContext)
+    public class CountriesService : ICountriesService
     {
-      _db = personsDbContext;
-    }
+        //private field
+        private readonly ApplicationDbContext _db;
 
-    public async Task<CountryResponse> AddCountry(CountryAddRequest? countryAddRequest)
-    {
-      //Validation: countryAddRequest parameter can't be null
-      if (countryAddRequest == null)
-      {
-        throw new ArgumentNullException(nameof(countryAddRequest));
-      }
+        //constructor
+        public CountriesService(ApplicationDbContext personsDbContext)
+        {
+            _db = personsDbContext;
+        }
 
-      //Validation: CountryName can't be null
-      if (countryAddRequest.CountryName == null)
-      {
-        throw new ArgumentException(nameof(countryAddRequest.CountryName));
-      }
+        public async Task<CountryResponse> AddCountry(CountryAddRequest? countryAddRequest)
+        {
+            //Validation: countryAddRequest parameter can't be null
+            if (countryAddRequest == null)
+            {
+                throw new ArgumentNullException(nameof(countryAddRequest));
+            }
 
-      //Validation: CountryName can't be duplicate
-      if (await _db.Countries.CountAsync(temp => temp.CountryName == countryAddRequest.CountryName) > 0)
-      {
-        throw new ArgumentException("Given country name already exists");
-      }
+            //Validation: CountryName can't be null
+            if (countryAddRequest.CountryName == null)
+            {
+                throw new ArgumentException(nameof(countryAddRequest.CountryName));
+            }
 
-      //Convert object from CountryAddRequest to Country type
-      Country country = countryAddRequest.ToCountry();
+            //Validation: CountryName can't be duplicate
+            if (await _db.Countries.CountAsync(temp => temp.CountryName == countryAddRequest.CountryName) > 0)
+            {
+                throw new ArgumentException("Given country name already exists");
+            }
 
-      //generate CountryID
-      country.CountryID = Guid.NewGuid();
+            //Convert object from CountryAddRequest to Country type
+            Country country = countryAddRequest.ToCountry();
 
-      //Add country object into _countries
-      _db.Countries.Add(country);
-      await _db.SaveChangesAsync();
+            //generate CountryID
+            country.CountryID = Guid.NewGuid();
 
-      return country.ToCountryResponse();
-    }
+            //Add country object into _countries
+            _db.Countries.Add(country);
+            await _db.SaveChangesAsync();
 
-    public async Task<List<CountryResponse>> GetAllCountries()
-    {
-      return await _db.Countries
-        .Select(country => country.ToCountryResponse()).ToListAsync();
-    }
+            return country.ToCountryResponse();
+        }
 
-    public async Task<CountryResponse?> GetCountryByCountryID(Guid? countryID)
-    {
-      if (countryID == null)
-        return null;
+        public async Task<List<CountryResponse>> GetAllCountries()
+        {
+            return await _db.Countries
+              .Select(country => country.ToCountryResponse()).ToListAsync();
+        }
 
-      Country? country_response_from_list = await _db.Countries
-        .FirstOrDefaultAsync(temp => temp.CountryID == countryID);
+        public async Task<CountryResponse?> GetCountryByCountryID(Guid? countryID)
+        {
+            if (countryID == null)
+                return null;
 
-      if (country_response_from_list == null)
-        return null;
+            Country? country_response_from_list = await _db.Countries
+              .FirstOrDefaultAsync(temp => temp.CountryID == countryID);
 
-      return country_response_from_list.ToCountryResponse();
-    }
+            if (country_response_from_list == null)
+                return null;
+
+            return country_response_from_list.ToCountryResponse();
+        }
 
         public async Task<int> UploadCountriesFromExcelFile(IFormFile formFile)
         {
