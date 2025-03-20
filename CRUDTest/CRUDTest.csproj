@@ -29,7 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CRUDEXAMPLE\CRUDPROJECT.csproj" />
     <ProjectReference Include="..\Entites\Entites.csproj" />
+    <ProjectReference Include="..\RepositoryContracts\RepositoryContracts.csproj" />
     <ProjectReference Include="..\ServiceContracts\ServiceContracts.csproj" />
     <ProjectReference Include="..\Service\Services.csproj" />
   </ItemGroup>
