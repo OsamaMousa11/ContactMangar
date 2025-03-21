@@ -103,7 +103,7 @@ namespace Services
                 await _personsRepository.GetFilteredPersons(temp =>
                 temp.Address.Contains(searchString)),
 
-                _ => await _personsRepository.GetAllPersons()
+                 _=> await _personsRepository.GetAllPersons()
             };
             return persons.Select(temp => temp.ToPersonResponse()).ToList();
         }
